@@ -7,6 +7,8 @@ import helmet from 'helmet'
 import Template from './../template.js'
 import userRoutes from './routes/user.routes.js'
 import authRoutes from './routes/auth.routes.js'
+import surveyRoutes from './routes/survey.routes.js'
+import questionRoutes from './routes/question.routes.js'
 import path from 'path'
 
 const app = express()
@@ -21,6 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/', userRoutes)
 app.use('/', authRoutes)
+app.use('/', surveyRoutes)
+app.use('/', questionRoutes)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
