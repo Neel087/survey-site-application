@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import { read } from './api-survey.js'
-import Questions from './../question/Questions'
+import QuestionsResponse from './../question/QuestionsResponse'
 import { listBySurvey } from './../question/api-question.js'
 import { useParams } from 'react-router-dom'
 const useStyles = makeStyles(theme => ({
@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function Survey() {
+export default function SurveyResponse() {
   const classes = useStyles()
   const [survey, setSurvey] = useState('')
   const [questions, setQuestions] = useState([])
@@ -96,7 +96,7 @@ export default function Survey() {
 
   return (<div className={classes.root}>
     <Grid container spacing={8}>
-      <Grid item xs={4} sm={4}>
+      <Grid item xs={12} sm={12}>
         <Card className={classes.card}>
           <CardContent>
             <div className={classes.details}>
@@ -119,10 +119,10 @@ export default function Survey() {
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={8} sm={8}>
+      <Grid item xs={12} sm={12}>
         <Card>
-          <Typography type="title" component="h2" className={classes.questionTitle}>Questions</Typography>
-          <Questions questions={questions} searched={false} />
+          <Typography type="title" component="h2" className={classes.questionTitle}>Answer following survey questions : </Typography>
+          <QuestionsResponse questions={questions} searched={false} />
         </Card>
       </Grid>
     </Grid>

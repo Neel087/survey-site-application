@@ -6,10 +6,10 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import { makeStyles } from '@material-ui/core/styles'
 import { read, update } from './api-question.js'
-import { Link, Redirect } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -49,7 +49,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function EditQuestion({ match }) {
+export default function EditQuestion() {
+  const { questionId,surveyId } = useParams();
+
   const classes = useStyles()
   const [values, setValues] = useState({
     title: '',
@@ -63,7 +65,7 @@ export default function EditQuestion({ match }) {
     const abortController = new AbortController()
     const signal = abortController.signal
     read({
-      questionId: match.params.questionId
+      questionId: questionId
     }, signal).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error })
@@ -86,11 +88,11 @@ export default function EditQuestion({ match }) {
       title: values.title || undefined,
       type: 'multiple_choice',
       options: values.options || [],
-      survey_id: match.params.surveyId
+      survey_id: surveyId
     }
     update({
-      surveyId: match.params.surveyId,
-      questionId: match.params.questionId
+      surveyId: surveyId,
+      questionId: questionId
     }, {
       t: jwt.token
     }, questionData).then((data) => {
@@ -118,7 +120,7 @@ export default function EditQuestion({ match }) {
   };
 
   if (values.redirect) {
-    return (<Redirect to={'/owner/survey/edit/' + match.params.surveyId} />)
+    return (<Navigate to={'/owner/survey/edit/' + surveyId} />)
   }
   return (<div>
     <Card className={classes.card}>
@@ -167,7 +169,7 @@ export default function EditQuestion({ match }) {
       </CardContent>
       <CardActions>
         <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Update</Button>
-        <Link to={'/owner/surveys/edit/' + match.params.surveyId} className={classes.submit}><Button variant="contained">Cancel</Button></Link>
+        <Link to={'/owner/surveys/edit/' + surveyId} className={classes.submit}><Button variant="contained">Cancel</Button></Link>
       </CardActions>
     </Card>
   </div>)

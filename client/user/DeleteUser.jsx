@@ -8,9 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import auth from './../auth/auth-helper'
+import auth from '../lib/auth-helper.js'
 import {remove} from './api-user.js'
-import {Redirect} from 'react-router-dom'
+import {Navigate} from 'react-router-dom'
 
 export default function DeleteUser(props) {
   const [open, setOpen] = useState(false)
@@ -27,7 +27,7 @@ export default function DeleteUser(props) {
       if (data && data.error) {
         console.log(data.error)
       } else {
-        auth.signout(() => console.log('deleted'))
+        auth.clearJWT(() => console.log('deleted'))
         setRedirect(true)
       }
     })
@@ -35,9 +35,9 @@ export default function DeleteUser(props) {
   const handleRequestClose = () => {
     setOpen(false)
   }
-  
+
   if (redirect) {
-    return <Redirect to='/'/>
+    return <Navigate to='/'/>
   }
     return (<span>
       <IconButton aria-label="Delete" onClick={clickButton} color="secondary">
@@ -66,3 +66,4 @@ export default function DeleteUser(props) {
 DeleteUser.propTypes = {
   userId: PropTypes.string.isRequired
 }
+

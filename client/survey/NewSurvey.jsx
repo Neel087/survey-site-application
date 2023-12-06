@@ -3,13 +3,13 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/core/styles'
 import {create} from './api-survey.js'
-import {Link, Redirect} from 'react-router-dom'
+import {Link, Navigate} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -80,7 +80,7 @@ export default function NewSurvey() {
   }
 
     if (values.redirect) {
-      return (<Redirect to={'/owner/surveys'}/>)
+      return (<Navigate to={'/owner/surveys'}/>)
     }
     return (<div>
       <Card className={classes.card}>

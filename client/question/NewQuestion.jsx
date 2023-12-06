@@ -4,12 +4,12 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/core/styles'
 import { create } from './api-question.js'
-import { Link, Redirect } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton'
 
@@ -50,7 +50,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function NewQuestion({ match }) {
+export default function NewQuestion() {
+  const { questionId, surveyId } = useParams();
   const classes = useStyles()
   const [values, setValues] = useState({
     title: '',
@@ -70,10 +71,10 @@ export default function NewQuestion({ match }) {
       title: values.title || undefined,
       type: 'multiple_choice',
       options: values.options || [],
-      survey_id: match.params.surveyId
+      survey_id: surveyId
     }
     create({
-      surveyId: match.params.surveyId
+      surveyId: surveyId
     }, {
       t: jwt.token
     }, questionData).then((data) => {
@@ -100,7 +101,7 @@ export default function NewQuestion({ match }) {
     setValues({ ...values, options: newOptions });
   };
   if (values.redirect) {
-    return (<Redirect to={'/owner/survey/edit/' + match.params.surveyId} />)
+    return (<Navigate to={'/owner/survey/edit/' + surveyId} />)
   }
   return (
     <div>
@@ -152,7 +153,7 @@ export default function NewQuestion({ match }) {
           <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>
             Submit
           </Button>
-          <Link to={'/owner/survey/edit/' + match.params.surveyId} className={classes.submit}>
+          <Link to={'/owner/survey/edit/' + surveyId} className={classes.submit}>
             <Button variant="contained">Cancel</Button>
           </Link>
         </CardActions>
@@ -175,7 +176,7 @@ export default function NewQuestion({ match }) {
       </CardContent>
       <CardActions>
         <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Submit</Button>
-        <Link to={'/owner/survey/edit/' + match.params.surveyId} className={classes.submit}><Button variant="contained">Cancel</Button></Link>
+        <Link to={'/owner/survey/edit/' + surveyId} className={classes.submit}><Button variant="contained">Cancel</Button></Link>
       </CardActions>
     </Card>
   </div>)

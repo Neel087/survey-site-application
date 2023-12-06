@@ -14,9 +14,6 @@ mongoose.connect(config.mongoUri, {
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${config.mongoUri}`)
 })
-// app.get("/", (req, res) => {
-//   res.json({ message: "Welcome to Survey Site." });
-// });
 app.listen(config.port, (err) => {
   if (err) {
     console.log(err)

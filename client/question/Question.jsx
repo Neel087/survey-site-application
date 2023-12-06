@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import { read, listRelated } from './api-question.js'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -53,8 +53,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function Question({ match }) {
+export default function Question() {
   const classes = useStyles()
+  const { questionId } = useParams();
+
   const [question, setQuestion] = useState({ survey: {} })
   const [suggestions, setSuggestions] = useState([])
   const [error, setError] = useState('')
@@ -62,7 +64,7 @@ export default function Question({ match }) {
     const abortController = new AbortController()
     const signal = abortController.signal
 
-    read({ questionId: match.params.questionId }, signal).then((data) => {
+    read({ questionId: questionId }, signal).then((data) => {
       if (data.error) {
         setError(data.error)
       } else {
@@ -72,14 +74,14 @@ export default function Question({ match }) {
     return function cleanup() {
       abortController.abort()
     }
-  }, [match.params.questionId])
+  }, [questionId])
 
   useEffect(() => {
     const abortController = new AbortController()
     const signal = abortController.signal
 
     listRelated({
-      questionId: match.params.questionId
+      questionId: questionId
     }, signal).then((data) => {
       if (data.error) {
         setError(data.error)
@@ -90,7 +92,7 @@ export default function Question({ match }) {
     return function cleanup() {
       abortController.abort()
     }
-  }, [match.params.questionId])
+  }, [questionId])
 
   return (
     <div className={classes.root}>

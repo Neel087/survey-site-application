@@ -13,11 +13,13 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Edit from '@material-ui/icons/Edit'
 import Divider from '@material-ui/core/Divider'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import { listByOwner } from './api-survey.js'
-import { Redirect, Link } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import DeleteSurvey from './DeleteSurvey.jsx'
 import AddBoxIcon from '@material-ui/icons/AddBox'
+import SurveyResponsesModal from './SurveyResponsesModal';
+import { listBySurvey } from '../response/api-response';  // Import the function to fetch survey responses
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
@@ -48,7 +50,29 @@ export default function MySurveys() {
   const classes = useStyles()
   const [surveys, setSurveys] = useState([])
   const [redirectToSignin, setRedirectToSignin] = useState(false)
+  const [openResponsesModal, setOpenResponsesModal] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [surveyData, setSurveyData] = useState(null);
+
   const jwt = auth.isAuthenticated()
+  const handleOpenResponsesModal = (survey) => {
+    setSelectedSurvey(survey);
+    listBySurvey({ surveyId: survey._id }, { t: jwt.token })
+      .then((data) => {
+        if (data.error) {
+          setRedirectToSignin(true);
+        } else {
+          setSurveyData(data);
+          setOpenResponsesModal(true);
+        }
+      });
+  };
+
+  const handleCloseResponsesModal = () => {
+    setOpenResponsesModal(false);
+    setSelectedSurvey(null);
+    setSurveyData(null);
+  };
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -60,6 +84,7 @@ export default function MySurveys() {
         setRedirectToSignin(true)
       } else {
         setSurveys(data)
+        setOpenResponsesModal(true);
       }
     })
     return function cleanup() {
@@ -75,7 +100,7 @@ export default function MySurveys() {
   }
 
   if (redirectToSignin) {
-    return <Redirect to='/signin' />
+    return <Navigate to='/signin' />
   }
   return (
     <div>
@@ -108,11 +133,14 @@ export default function MySurveys() {
                 </div>
                 {auth.isAuthenticated().user && auth.isAuthenticated().user._id == survey.owner._id &&
                   (<ListItemSecondaryAction>
-                    <Link to={"/owner/responses/" + survey.name + '/' + survey._id}>
-                      <Button aria-label="Responses" color="primary">
-                        View Responses
-                      </Button>
-                    </Link>
+                    <Button
+                      aria-label="Responses"
+                      className={classes.viewResponsesButton}
+                      onClick={() => handleOpenResponsesModal(survey)}
+                      color="primary"
+                    >
+                      View Responses
+                    </Button>
                     <Link to={"/owner/survey/edit/" + survey._id}>
                       <IconButton aria-label="Edit" color="primary">
                         <Edit />
@@ -127,5 +155,13 @@ export default function MySurveys() {
           })}
         </List>
       </Paper>
+      {surveyData && (
+        <SurveyResponsesModal
+          open={openResponsesModal}
+          onClose={handleCloseResponsesModal}
+          surveyData={surveyData}
+          selectedSurvey={selectedSurvey}
+        />
+      )}
     </div>)
 }

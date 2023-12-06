@@ -1,45 +1,59 @@
-import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Home from './core/Home'
-import Users from './user/Users'
-import Signup from './user/Signup'
-import Signin from './auth/Signin'
-import EditProfile from './user/EditProfile'
-import Profile from './user/Profile'
-import PrivateRoute from './auth/PrivateRoute'
-import Menu from './core/Menu'
+import Users from './user/Users.jsx'
+import Signup from './user/Signup.jsx'
+import Signin from './lib/Signin.jsx'
+import Profile from './user/Profile.jsx'
+import PrivateRoute from './lib/PrivateRoute.jsx'
+import EditProfile from './user/EditProfile.jsx'
 import NewSurvey from './survey/NewSurvey'
 import Surveys from './survey/Surveys'
 import MySurveys from './survey/MySurveys'
 import Survey from './survey/Survey'
+import SurveyResponse from './survey/SurveyResponse'
 import EditSurvey from './survey/EditSurvey'
 import NewQuestion from './question/NewQuestion'
 import EditQuestion from './question/EditQuestion'
 
+import Menu from './core/Menu'
+import Thanks from './question/Thanks.jsx';
+function MainRouter() {
+  return (
+    <div>
+      <Menu />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route
+          path="/user/edit/:userId"
+          element={
+            <PrivateRoute>
+              <EditProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/thanks" element={<Thanks />} />
+        <Route path="/user/:userId" element={<Profile />} />
+        <Route path="/surveys/all" element={<Surveys />} />
+        <Route path="/surveys/:surveyId" element={<Survey />} />
+        <Route path="/surveys/respond/:surveyId" element={<SurveyResponse />} />
+        <Route path="/owner/surveys" element={
+          <PrivateRoute><MySurveys />
+          </PrivateRoute>} />
+        <Route path="/owner/survey/new" element={
+          <PrivateRoute><NewSurvey /></PrivateRoute>} />
+        <Route path="/owner/survey/edit/:surveyId" element={
+          <PrivateRoute><EditSurvey /></PrivateRoute>} />
 
-const MainRouter = () => {
-  return (<div>
-    <Menu />
-    <Switch>
-      <Route exact path="/" component={Home} />
-      <Route path="/users" component={Users} />
-      <Route path="/signup" component={Signup} />
-      <Route path="/signin" component={Signin} />
-      <PrivateRoute path="/user/edit/:userId" component={EditProfile} />
-      <Route path="/user/:userId" component={Profile} />
 
-      <Route path="/surveys/all" component={Surveys} />
-      <Route path="/surveys/:surveyId" component={Survey} />
-      <PrivateRoute path="/owner/surveys" component={MySurveys} />
-      <PrivateRoute path="/owner/survey/new" component={NewSurvey} />
-      <PrivateRoute path="/owner/survey/edit/:surveyId" component={EditSurvey} />
-
-
-      <PrivateRoute path="/owner/:surveyId/questions/new" component={NewQuestion} />
-      <PrivateRoute path="/owner/:surveyId/:questionId/edit" component={EditQuestion} />
-
-    </Switch>
-  </div>)
+        <Route path="/owner/:surveyId/questions/new" element={<PrivateRoute><NewQuestion /></PrivateRoute>} />
+        <Route path="/owner/:surveyId/:questionId/edit" element={<PrivateRoute><EditQuestion /></PrivateRoute>} />
+      </Routes>
+    </div>
+  );
 }
 
 export default MainRouter

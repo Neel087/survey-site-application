@@ -4,27 +4,24 @@ import cookieParser from 'cookie-parser'
 import compress from 'compression'
 import cors from 'cors'
 import helmet from 'helmet'
-import Template from './../template.js'
 import userRoutes from './routes/user.routes.js'
 import authRoutes from './routes/auth.routes.js'
 import surveyRoutes from './routes/survey.routes.js'
 import questionRoutes from './routes/question.routes.js'
+import responseRoutes from './routes/response.routes.js'
 import path from 'path'
 
 const app = express()
 const CURRENT_WORKING_DIR = process.cwd()
 
-app.get('/', (req, res) => {
-    res.status(200).send(Template())
-})
-
-app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
+app.use(express.static(path.join(CURRENT_WORKING_DIR, "dist/app")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', surveyRoutes)
 app.use('/', questionRoutes)
+app.use('/', responseRoutes)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())

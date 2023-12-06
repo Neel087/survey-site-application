@@ -8,7 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import { remove } from './api-question.js'
 
 export default function DeleteQuestion(props) {

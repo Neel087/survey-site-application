@@ -6,10 +6,10 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
-import auth from '../auth/auth-helper.js'
+import auth from '../lib/auth-helper.js'
 import { makeStyles } from '@material-ui/core/styles'
 import { read, update } from './api-survey.js'
-import { Redirect } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import MyQuestions from './../question/MyQuestions'
 
@@ -53,8 +53,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function EditSurvey({ match }) {
+export default function EditSurvey() {
   const classes = useStyles()
+  const { surveyId } = useParams();
   const [values, setValues] = useState({
     name: '',
     description: '',
@@ -67,7 +68,7 @@ export default function EditSurvey({ match }) {
     const abortController = new AbortController()
     const signal = abortController.signal
     read({
-      surveyId: match.params.surveyId
+      surveyId: surveyId
     }, signal).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error })
@@ -87,7 +88,7 @@ export default function EditSurvey({ match }) {
     }
     console.log(surveyData)
     update({
-      surveyId: match.params.surveyId
+      surveyId: surveyId
     }, {
       t: jwt.token
     }, surveyData).then((data) => {
@@ -104,7 +105,7 @@ export default function EditSurvey({ match }) {
   }
 
   if (values.redirect) {
-    return (<Redirect to={'/owner/surveys'} />)
+    return (<Navigate to={'/owner/surveys'} />)
   }
   return (<div className={classes.root}>
     <Grid container spacing={8}>
@@ -115,7 +116,7 @@ export default function EditSurvey({ match }) {
               Edit Survey
             </Typography>
             <br />
-            <TextField id="name" label="Name" className={classes.textField} value={values.name} onChange={handleChange('name')} margin="normal" required/><br />
+            <TextField id="name" label="Name" className={classes.textField} value={values.name} onChange={handleChange('name')} margin="normal" required /><br />
             <TextField
               id="multiline-flexible"
               label="Description"
@@ -143,7 +144,7 @@ export default function EditSurvey({ match }) {
         </Card>
       </Grid>
       <Grid item xs={6} sm={6}>
-        <MyQuestions surveyId={match.params.surveyId} />
+        <MyQuestions surveyId={surveyId} />
       </Grid>
     </Grid>
   </div>)

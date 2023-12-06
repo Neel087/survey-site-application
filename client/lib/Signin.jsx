@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
@@ -7,10 +7,10 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/core/styles'
-import auth from '../lib/auth-helper.js'
-import {read, update} from './api-user.js'
+import auth from './auth-helper.js'
 import {Navigate} from 'react-router-dom'
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import {signin} from './api-auth.js'
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -20,12 +20,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     paddingBottom: theme.spacing(2)
   },
-  title: {
-    margin: theme.spacing(2),
-    color: theme.palette.protectedTitle
-  },
   error: {
     verticalAlign: 'middle'
+  },
+  title: {
+    marginTop: theme.spacing(2),
+    color: theme.palette.openTitle
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -38,70 +38,56 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function EditProfile({ match }) {
+export default function Signin(props) {
+  const location = useLocation();
+  console.log(location.state)
   const classes = useStyles()
-  const { userId } = useParams();
   const [values, setValues] = useState({
-    name: '',
-    password: '',
-    email: '',
-    open: false,
-    error: '',
-    redirectToProfile: false
+      email: '',
+      password: '',
+      error: '',
+      redirectToReferrer: false
   })
-  const jwt = auth.isAuthenticated()
-
-  useEffect(() => {
-    const abortController = new AbortController()
-    const signal = abortController.signal
-
-    read({
-      userId: userId
-    }, {t: jwt.token}, signal).then((data) => {
-      if (data && data.error) {
-        setValues({...values, error: data.error})
-      } else {
-        setValues({...values, name: data.name, email: data.email})
-      }
-    })
-    return function cleanup(){
-      abortController.abort()
-    }
-
-  }, [userId])
 
   const clickSubmit = () => {
     const user = {
-      name: values.name || undefined,
       email: values.email || undefined,
       password: values.password || undefined
     }
-    update({
-      userId: userId
-    }, {
-      t: jwt.token
-    }, user).then((data) => {
-      if (data && data.error) {
-        setValues({...values, error: data.error})
+console.log(user)
+    signin(user).then((data) => {
+      if (data.error) {
+        setValues({ ...values, error: data.error})
       } else {
-        setValues({...values, userId: data._id, redirectToProfile: true})
+        console.log(data)
+        auth.authenticate(data, () => {
+          setValues({ ...values, error: '',redirectToReferrer: true})
+        })
       }
     })
   }
+
   const handleChange = name => event => {
-    setValues({...values, [name]: event.target.value})
+    setValues({ ...values, [name]: event.target.value })
   }
 
-    if (values.redirectToProfile) {
-      return (<Navigate to={'/user/' + values.userId}/>)
-    }
-    return (
+  const {from} = location.state || {
+      from: {
+        pathname: '/'
+      }
+  }
+  const {redirectToReferrer} = values
+  if (redirectToReferrer) {
+    return <Navigate to={from}/>;
+      
+  }
+
+  return (
       <Card className={classes.card}>
         <CardContent>
           <Typography variant="h6" className={classes.title}>
-            Edit Profile
+            Sign In
           </Typography>
-          <TextField id="name" label="Name" className={classes.textField} value={values.name} onChange={handleChange('name')} margin="normal"/><br/>
           <TextField id="email" type="email" label="Email" className={classes.textField} value={values.email} onChange={handleChange('email')} margin="normal"/><br/>
           <TextField id="password" type="password" label="Password" className={classes.textField} value={values.password} onChange={handleChange('password')} margin="normal"/>
           <br/> {
@@ -117,4 +103,3 @@ export default function EditProfile({ match }) {
       </Card>
     )
 }
-

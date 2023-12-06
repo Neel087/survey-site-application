@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import { list } from './api-survey.js'
 import { Link } from 'react-router-dom'
-
+import Button from '@material-ui/core/Button';
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
     maxWidth: 600,
@@ -37,7 +37,10 @@ const useStyles = makeStyles(theme => ({
   },
   details: {
     padding: '24px'
-  }
+  },
+  takeSurveyButton: {
+    marginTop: theme.spacing(2)
+  },
 }))
 export default function Surveys() {
   const classes = useStyles()
@@ -70,8 +73,8 @@ export default function Surveys() {
             return <div key={i}>
               <Divider />
               <ListItem button>
-              <Typography type="subheading" component="h4" className={classes.subheading}>
-                  </Typography>
+                <Typography type="subheading" component="h4" className={classes.subheading}>
+                </Typography>
                 <div className={classes.details}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ flex: '1' }}>
@@ -90,11 +93,15 @@ export default function Surveys() {
                     <strong>Description:</strong> {survey.description}
                   </Typography>
                 </div>
-                <Link to={"/surveys/" + survey._id} >
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-                </Link>
+                <Button
+                  component={Link}
+                  to={"/surveys/respond/" + survey._id}
+                  variant="contained"
+                  color="primary"
+                  className={classes.takeSurveyButton}
+                >
+                  Take Survey
+                </Button>
               </ListItem>
               <Divider />
             </div>
